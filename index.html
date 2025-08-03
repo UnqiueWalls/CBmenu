@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkerboard Menu - BlobTown Hub (Synced)</title>
+    <title>PinkOut</title>
     <style>
         * {
             margin: 0;
@@ -11,50 +11,91 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-bg: #000000;
+            --secondary-bg: #000000;
+            --accent-color: #ff00d4;
+            --danger-color: #ff0040;
+            --warning-color: #ff9900;
+            --text-primary: #ffffff;
+            --text-secondary: #ffffff;
+            --border-color: #ff00d4;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgb(255, 0, 179);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: 
-                repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
-            background-size: 80px 80px;
-            background-position: 0 0;
+            background: linear-gradient(45deg, #0a0a0a, #000000, #000000);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: var(--text-primary);
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .auth-container, .menu-container, .dev-container, .user-info-container, .ban-container, .chat-container {
-            background: #fff;
-            border: 4px solid #000;
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgb(44, 54, 0) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgb(53, 0, 53) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgb(59, 0, 45) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             max-width: 500px;
             width: 100%;
             padding: 40px;
-            animation: slideIn 0.5s ease-out;
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            top: 0;
-            left: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .menu-container, .dev-container, .user-info-container, .ban-container, .chat-container {
-            max-width: 600px;
+        .wide-container {
+            max-width: 800px;
+        }
+
+        .extra-wide-container {
+            max-width: 1200px;
+            min-height: 700px;
         }
 
         .chat-container {
-            max-width: 800px;
             height: 600px;
             display: flex;
             flex-direction: column;
         }
 
-        @keyframes slideIn {
+        @keyframes slideInUp {
             from {
                 opacity: 0;
-                transform: scale(0.9);
+                transform: translateY(30px) scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: scale(1);
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -62,677 +103,399 @@
             display: none;
         }
 
-        /* Sync Status Indicator */
+        /* Sync Status */
         .sync-status {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 8px 16px;
-            border: 2px solid #000;
-            background: #fff;
-            font-size: 0.8rem;
-            font-weight: bold;
+            padding: 12px 20px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
             z-index: 1000;
             transition: all 0.3s ease;
+            color: var(--text-primary);
         }
 
-        .sync-status.syncing {
-            background: #ffeb3b;
-            color: #000;
+        .sync-status.connecting {
+            border-color: var(--warning-color);
+            box-shadow: 0 0 20px rgb(0, 238, 255);
         }
 
         .sync-status.synced {
-            background: #4caf50;
-            color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgb(255, 0, 221);
         }
 
         .sync-status.error {
-            background: #f44336;
-            color: #fff;
+            border-color: var(--danger-color);
+            box-shadow: 0 0 20px rgb(255, 0, 0);
         }
 
-        .sync-status.offline {
-            background: #ff9800;
-            color: #fff;
-        }
-
-        /* Auth Styles */
-        .auth-header {
+        /* Headers */
+        .header {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
         }
 
-        .auth-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #000;
+        .title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
             margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            background: linear-gradient(45deg, var(--accent-color), #ff00dd, var(--accent-color));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGlow 3s ease-in-out infinite;
         }
 
-        .auth-subtitle {
-            color: #666;
+        @keyframes textGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
             font-size: 1rem;
+            font-weight: 500;
         }
 
+        /* Forms */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
         }
 
         .form-label {
             display: block;
-            font-weight: bold;
-            color: #000;
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 8px;
             text-transform: uppercase;
             font-size: 0.9rem;
             letter-spacing: 1px;
         }
 
-        .form-input, .ban-select, .chat-input {
+        .form-input, .form-select {
             width: 100%;
-            padding: 15px;
-            border: 3px solid #000;
-            background: #fff;
+            padding: 15px 20px;
+            border: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             font-size: 1rem;
+            color: var(--text-primary);
             transition: all 0.3s ease;
         }
 
-        .form-input:focus, .ban-select:focus, .chat-input:focus {
-            outline: none;
-            background: #f0f0f0;
+        .form-input::placeholder {
+            color: var(--text-secondary);
         }
 
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Buttons */
         .btn {
             width: 100%;
-            padding: 15px;
-            border: 3px solid #000;
-            background: #000;
-            color: #fff;
+            padding: 15px 20px;
+            border: none;
+            background: linear-gradient(45deg, var(--accent-color), #ff00d4);
+            color: var(--primary-bg);
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
+            border-radius: 12px;
             transition: all 0.3s ease;
             margin-bottom: 15px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgb(255, 251, 0), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn:hover {
-            background: #fff;
-            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgb(238, 255, 0);
         }
 
         .btn-secondary {
-            background: #fff;
-            color: #000;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #000;
-            color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgb(255, 174, 0);
         }
 
         .btn-danger {
-            background: #ff0000;
-            border-color: #ff0000;
+            background: linear-gradient(45deg, var(--danger-color), #ff0000);
         }
 
         .btn-danger:hover {
-            background: #fff;
-            color: #ff0000;
+            box-shadow: 0 10px 30px rgb(255, 0, 128);
         }
 
-        .switch-text {
-            text-align: center;
-            color: #666;
-            margin-top: 20px;
-            font-size: 0.9rem;
+        .btn-download {
+            background: linear-gradient(45deg, #fffb00, #88ff00);
+            color: var(--primary-bg);
         }
 
-        .switch-link {
-            color: #000;
-            text-decoration: underline;
-            cursor: pointer;
-            font-weight: bold;
+        .btn-download:hover {
+            box-shadow: 0 10px 30px rgb(157, 255, 0);
         }
 
-        /* Menu Styles */
-        .menu-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 4px solid #000;
-            padding-bottom: 20px;
+        .btn-small {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            margin: 0 5px;
         }
 
-        .menu-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .version {
-            color: #666;
-            font-size: 1rem;
-            font-weight: bold;
+        /* User Info */
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-welcome {
+            font-weight: 600;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Tags */
+        .tag {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-
-        .user-info {
-            text-align: right;
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 2px solid #000;
-            background: #f0f0f0;
+            border-radius: 15px;
+            margin-left: 8px;
         }
 
         .mod-tag {
-            background: #00c3ff;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-left: 8px;
-        }
-
-        .banned-tag {
-            background: #ff0000;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-left: 8px;
-        }
-
-        .textbanned-tag {
-            background: #ff0000;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-left: 8px;
+            background: linear-gradient(45deg, #00c3ff, #0099cc);
+            color: white;
         }
 
         .dev-tag {
-            background: #ff00f2;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-left: 8px;
+            background: linear-gradient(45deg, #ff00f2, #ff00ff);
+            color: white;
         }
 
         .demo-tag {
-            background: #3cff00;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-left: 8px;
+            background: linear-gradient(45deg, #3cff00, #40ff00);
+            color: white;
         }
 
-        .logout-btn, .dev-btn {
-            background: #fff;
-            color: #000;
-            border: 2px solid #000;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            margin-left: 10px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
+        .banned-tag, .textbanned-tag {
+            background: linear-gradient(45deg, var(--danger-color), #ff0000);
+            color: white;
         }
 
-        .logout-btn:hover, .dev-btn:hover {
-            background: #000;
-            color: #fff;
-        }
-
+        /* Sections */
         .section {
             margin-bottom: 30px;
         }
 
         .section-title {
             font-size: 1.4rem;
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #000;
-            color: #fff;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(45deg, var(--accent-color), #ff00bf);
+            color: var(--primary-bg);
             text-transform: uppercase;
             letter-spacing: 2px;
             text-align: center;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
         }
 
+        .section-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Links Grid */
         .links-grid {
             display: grid;
             gap: 15px;
         }
 
         .link-item {
-            background: #fff;
-            border: 3px solid #000;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
             padding: 20px;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .link-item:hover::before {
+            opacity: 1;
         }
 
         .link-item:hover {
-            background: #000;
-        }
-
-        .link-item:hover a {
-            color: #fff;
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 35px rgba(0, 255, 136, 0.2);
         }
 
         .link-item a {
             text-decoration: none;
-            color: #000;
-            font-weight: bold;
+            color: var(--text-primary);
+            font-weight: 600;
             font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             display: block;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
         }
 
-        .special-link {
-            background: #f0f0f0;
-        }
-
-        .special-link:hover {
-            background: #000;
-        }
-
-        /* Dev Tools Styles */
-        .dev-header, .user-info-header, .ban-header, .chat-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 4px solid #000;
-            padding-bottom: 20px;
-        }
-
-        .dev-title, .user-info-title, .ban-title, .chat-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .back-btn {
-            background: #fff;
-            color: #000;
-            border: 2px solid #000;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .back-btn:hover {
-            background: #000;
-            color: #fff;
-        }
-
-        .user-list {
-            border: 3px solid #000;
-            background: #f0f0f0;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 2px solid #000;
-            margin-bottom: 10px;
-            background: #fff;
-        }
-
-        .user-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .user-details {
-            flex-grow: 1;
-        }
-
-        .username {
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .user-email {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .delete-user-btn, .mod-toggle-btn, .view-info-btn, .ban-user-btn, .unban-user-btn, .textban-user-btn, .untextban-user-btn {
-            background: #000;
-            color: #fff;
-            border: 2px solid #000;
-            padding: 6px 12px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-
-        .delete-user-btn:hover, .mod-toggle-btn:hover, .view-info-btn:hover, .ban-user-btn:hover, .unban-user-btn:hover, .textban-user-btn:hover, .untextban-user-btn:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        .delete-user-btn:disabled, .mod-toggle-btn:disabled, .view-info-btn:disabled, .ban-user-btn:disabled, .unban-user-btn:disabled, .textban-user-btn:disabled, .untextban-user-btn:disabled {
-            background: #ccc;
-            color: #666;
-            border-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .mod-toggle-btn {
-            background: #666;
-        }
-
-        .mod-toggle-btn:hover {
-            background: #fff;
-            color: #666;
-        }
-
-        .view-info-btn {
-            background: #333;
-        }
-
-        .view-info-btn:hover {
-            background: #fff;
-            color: #333;
-        }
-
-        .ban-user-btn {
-            background: #ff0000;
-        }
-
-        .ban-user-btn:hover {
-            background: #fff;
-            color: #ff0000;
-        }
-
-        .unban-user-btn {
-            background: #00aa00;
-        }
-
-        .unban-user-btn:hover {
-            background: #fff;
-            color: #00aa00;
-        }
-
-        .textban-user-btn {
-            background: #ff6600;
-        }
-
-        .textban-user-btn:hover {
-            background: #fff;
-            color: #ff6600;
-        }
-
-        .untextban-user-btn {
-            background: #ffaa00;
-        }
-
-        .untextban-user-btn:hover {
-            background: #fff;
-            color: #ffaa00;
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        /* Chat Controls Styles */
-        .chat-controls-container {
-            border: 3px solid #000;
-            background: #f0f0f0;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .chat-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: #fff;
-            border: 2px solid #000;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #000;
-        }
-
-        /* User Info Display Styles */
-        .user-info-display {
-            border: 3px solid #000;
-            background: #f0f0f0;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 2px solid #000;
-            margin-bottom: 10px;
-            background: #fff;
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .info-label {
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .info-value {
-            color: #666;
-        }
-
-        /* Ban System Styles */
-        .ban-user-list {
-            border: 3px solid #000;
-            background: #f0f0f0;
-            padding: 20px;
-            margin-bottom: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .ban-user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 2px solid #000;
-            margin-bottom: 10px;
-            background: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .ban-user-item:hover {
-            background: #f0f0f0;
-        }
-
-        .ban-user-item.selected {
-            background: #000;
-            color: #fff;
-        }
-
-        .ban-user-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .ban-controls {
-            border: 3px solid #000;
-            background: #f0f0f0;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .ban-controls h3 {
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .ban-type-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .ban-type-btn {
-            flex: 1;
-            padding: 10px;
-            border: 3px solid #000;
-            background: #fff;
-            color: #000;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .ban-type-btn.active {
-            background: #000;
-            color: #fff;
-        }
-
-        .ban-type-btn:hover {
-            background: #f0f0f0;
-        }
-
-        .ban-type-btn.active:hover {
-            background: #333;
+        .link-item:hover a {
+            color: var(--accent-color);
         }
 
         /* Chat Styles */
         .chat-messages {
             flex: 1;
-            border: 3px solid #000;
-            background: #f0f0f0;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
             overflow-y: auto;
-            max-height: 400px;
+            backdrop-filter: blur(10px);
         }
 
         .chat-message {
-            background: #fff;
-            border: 2px solid #000;
-            padding: 10px;
-            margin-bottom: 10px;
-            word-wrap: break-word;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            animation: messageSlide 0.3s ease;
         }
 
-        .chat-message:last-child {
-            margin-bottom: 0;
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chat-message:hover {
+            border-color: var(--accent-color);
+            transform: translateX(5px);
         }
 
         .message-header {
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #000;
-            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 8px;
             font-size: 0.9rem;
         }
 
         .message-content {
-            color: #333;
-            line-height: 1.4;
+            color: var(--text-primary);
+            line-height: 1.6;
         }
 
         .message-time {
             font-size: 0.7rem;
-            color: #666;
-            margin-left: 10px;
-        }
-
-        .message-delete-btn {
-            background: #ff0000;
-            color: #fff;
-            border: 2px solid #ff0000;
-            padding: 4px 8px;
-            font-size: 0.6rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-left: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .message-delete-btn:hover {
-            background: #fff;
-            color: #ff0000;
+            color: var(--text-secondary);
         }
 
         .chat-input-container {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: flex-end;
         }
 
@@ -741,61 +504,228 @@
             margin-bottom: 0;
         }
 
-        .chat-input:disabled {
-            background: #ccc;
-            color: #666;
-            cursor: not-allowed;
-        }
-
         .chat-send-btn {
             width: auto;
             margin-bottom: 0;
-            padding: 15px 20px;
+            padding: 15px 25px;
             white-space: nowrap;
         }
 
-        .chat-send-btn:disabled {
-            background: #ccc;
-            color: #666;
-            cursor: not-allowed;
-            border-color: #ccc;
+        /* Gallery Styles */
+        .gallery-upload {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
         }
 
-        .textban-warning {
-            background: #fff3cd;
-            border: 3px solid #ff6600;
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            min-height: 200px;
+        }
+
+        .gallery-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 35px rgb(200, 255, 0);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(.7);
+        }
+
+        .gallery-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .gallery-actions .btn {
+            margin-bottom: 0;
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 0.8rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: block;
+            cursor: pointer;
+        }
+
+        .file-input-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .file-input-btn:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* User Management */
+        .user-list {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: var(--glass-bg);
+            transform: translateX(5px);
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .username {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Warning Messages */
+        .warning {
+            background: rgb(255, 0, 119);
+            border: 1px solid var(--warning-color);
+            border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
             text-align: center;
-            color: #856404;
-            font-weight: bold;
+            color: var(--warning-color);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Switch Text */
+        .switch-text {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .switch-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .switch-link:hover {
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        @media (max-width: 600px) {
-            .auth-container, .menu-container, .dev-container, .user-info-container, .ban-container, .chat-container {
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
                 padding: 20px;
                 margin: 10px;
             }
             
-            .menu-title {
+            .title {
                 font-size: 2rem;
             }
             
-            .section-title {
-                font-size: 1.2rem;
-            }
-
-            .user-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .user-actions button {
-                margin: 2px 0;
-            }
-
             .chat-container {
                 height: 500px;
             }
@@ -808,103 +738,162 @@
                 width: 100%;
             }
 
-            .ban-type-selector {
-                flex-direction: column;
+            .gallery-grid {
+                grid-template-columns: 1fr;
             }
 
-            .chat-stats {
+            .user-item {
                 flex-direction: column;
+                align-items: flex-start;
                 gap: 10px;
             }
 
-            .sync-status {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-bottom: 20px;
+            .user-actions {
                 width: 100%;
-                text-align: center;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .gallery-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--glass-border);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Particles Effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+                opacity: 1;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sync Status Indicator -->
-    <div id="syncStatus" class="sync-status">Connecting...</div>
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
 
-    <!-- Login/Signup Pages -->
-    <div id="loginPage" class="auth-container">
-        <div class="auth-header">
-            <h1 class="auth-title">Login</h1>
-            <p class="auth-subtitle">Synced Across All Devices</p>
+    <!-- Sync Status -->
+    <div id="syncStatus" class="sync-status">
+        <span class="loading"></span> Connecting...
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="container">
+        <div class="header">
+            <h1 class="title">PinkOut</h1>
+            <p class="subtitle">Sign In</p>
         </div>
         
         <form id="loginForm">
             <div class="form-group">
                 <label class="form-label">Username</label>
-                <input type="text" class="form-input" id="loginUsername" required>
+                <input type="text" class="form-input" id="loginUsername" placeholder="Enter your username" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-input" id="loginPassword" required>
+                <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
             </div>
-            <button type="submit" class="btn">Login</button>
+            <button type="submit" class="btn">Sign In</button>
         </form>
         
         <div class="switch-text">
             Don't have an account? 
-            <span class="switch-link" onclick="showSignup()">Sign up here</span>
+            <a class="switch-link" onclick="showSignup()">Create one here</a>
         </div>
     </div>
 
-    <div id="signupPage" class="auth-container hidden">
-        <div class="auth-header">
-            <h1 class="auth-title">Sign Up</h1>
-            <p class="auth-subtitle">Create Synced Account</p>
+    <!-- Signup Page -->
+    <div id="signupPage" class="container hidden">
+        <div class="header">
+            <h1 class="title">Join PinkOut</h1>
+            <p class="subtitle">Create Your Account</p>
         </div>
         
         <form id="signupForm">
             <div class="form-group">
                 <label class="form-label">Username</label>
-                <input type="text" class="form-input" id="signupUsername" required>
+                <input type="text" class="form-input" id="signupUsername" placeholder="Choose a username" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-input" id="signupEmail" required>
+                <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-input" id="signupPassword" required>
+                <input type="password" class="form-input" id="signupPassword" placeholder="Create a password" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" class="form-input" id="confirmPassword" required>
+                <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm your password" required>
             </div>
             <button type="submit" class="btn">Create Account</button>
         </form>
         
         <div class="switch-text">
             Already have an account? 
-            <span class="switch-link" onclick="showLogin()">Login here</span>
+            <a class="switch-link" onclick="showLogin()">Sign in here</a>
         </div>
     </div>
 
-    <!-- Main Menu Page -->
-    <div id="menuPage" class="menu-container hidden">
+    <!-- Main Menu -->
+    <div id="menuPage" class="container wide-container hidden">
         <div class="user-info">
-            <span>Welcome, <strong id="currentUser"></strong></span>
-            <span id="modTag" class="mod-tag hidden">MOD</span>
-            <span id="devTag" class="dev-tag hidden">DEV</span>
-            <span id="demoTag" class="demo-tag hidden">DEMO</span>
-            <span id="bannedTag" class="banned-tag hidden">BANNED</span>
-            <span id="textbannedTag" class="textbanned-tag hidden">TEXT BANNED</span>
-            <button id="devToolsBtn" class="dev-btn hidden" onclick="showDevTools()">Dev Tools</button>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div class="user-welcome">
+                Welcome, <strong id="currentUser"></strong>
+                <span id="modTag" class="tag mod-tag hidden">MOD</span>
+                <span id="devTag" class="tag dev-tag hidden">DEV</span>
+                <span id="demoTag" class="tag demo-tag hidden">DEMO</span>
+                <span id="bannedTag" class="tag banned-tag hidden">BANNED</span>
+                <span id="textbannedTag" class="tag textbanned-tag hidden">CHAT BANNED</span>
+            </div>
+            <div class="user-actions">
+                <button id="devToolsBtn" class="btn btn-secondary btn-small hidden" onclick="showDevTools()">Dev Tools</button>
+                <button class="btn btn-secondary btn-small" onclick="logout()">Logout</button>
+            </div>
         </div>
 
-        <div class="menu-header">
-            <h1 class="menu-title">Checkerboard Menu</h1>
-            <p class="version">Version 2.0 - Synced</p>
+        <div class="header">
+            <h1 class="title">PinkOut</h1>
+            <p class="subtitle">v3.0</p>
         </div>
 
         <div class="section">
@@ -913,20 +902,23 @@
                 <div class="link-item">
                     <a href="#" onclick="showChat()">Chat</a>
                 </div>
+                <div class="link-item">
+                    <a href="#" onclick="showGallery()">Gallery</a>
+                </div>
             </div>
         </div>
 
         <div class="section">
-            <h2 class="section-title">BlobTown Central</h2>
+            <h2 class="section-title">BlobTown</h2>
             <div class="links-grid">
-                <div class="link-item special-link">
-                    <a href="https://www.blobtown.com/" target="_blank" rel="noopener">BlobTown Official Site</a>
+                <div class="link-item">
+                    <a href="https://www.blobtown.com/" target="_blank" rel="noopener">Official Website</a>
                 </div>
                 <div class="link-item">
-                    <a href="https://blobtown.fandom.com/wiki/Blobtown_Wiki" target="_blank" rel="noopener">BlobTown Wiki</a>
+                    <a href="https://blobtown.fandom.com/wiki/Blobtown_Wiki" target="_blank" rel="noopener">Wiki</a>
                 </div>
                 <div class="link-item">
-                    <a href="https://www.meta.com/experiences/blobtown/6366866460079568/" target="_blank" rel="noopener">Meta Store Page</a>
+                    <a href="https://www.meta.com/experiences/blobtown/6366866460079568/" target="_blank" rel="noopener">Store page</a>
                 </div>
                 <div class="link-item">
                     <a href="#" onclick="openInventory()">My Inventory</a>
@@ -938,30 +930,111 @@
             <h2 class="section-title">BT Modding</h2>
             <div class="links-grid">
                 <div class="link-item">
-                    <a href="https://discord.gg/vJuVWUYR7q" target="_blank" rel="noopener">BTModding Discord</a>
+                    <a href="https://discord.gg/vJuVWUYR7q" target="_blank" rel="noopener">BTM Discord</a>
                 </div>
-                <div class="link-item special-link">
+                <div class="link-item">
                     <a href="https://gggravity.org/" target="_blank" rel="noopener">GGGravity Hub</a>
                 </div>
                 <div class="link-item">
-                    <a href="https://www.tiktok.com/@gggravity" target="_blank" rel="noopener">GGGravity TikTok</a>
+                    <a href="https://www.tiktok.com/@gggravity" target="_blank" rel="noopener">GGGravity Tiktok</a>
                 </div>
                 <div class="link-item">
-                    <a href="https://gggravity.org/gravity-accounts/" target="_blank" rel="noopener">GGGravity Accounts</a>
+                    <a href="https://gggravity.org/chatroom/" target="_blank" rel="noopener">GGGravity Chat</a>
                 </div>
-                <div class="link-item">
-                    <a href="https://gggravity.org/chatroom/" target="_blank" rel="noopener">Community Chat</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Page -->
+    <div id="chatPage" class="container wide-container chat-container hidden">
+        <button class="btn btn-secondary btn-small" onclick="showMenu()" style="width: auto; margin-bottom: 20px;">← Back to Menu</button>
+        
+        <div class="header">
+            <h1 class="title" style="font-size: 2rem;">Chat</h1>
+        </div>
+
+        <div id="textbanWarning" class="warning hidden">
+            You are text banned and cannot send messages. Time remaining: <span id="textbanTimeRemaining"></span>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message">
+                <div class="message-content" style="text-align: center; color: var(--text-secondary); font-style: italic;">No messages yet. Be the first to say something!</div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." maxlength="500">
+            <button class="btn chat-send-btn" onclick="sendMessage()" id="chatSendBtn">Send</button>
+        </div>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="galleryPage" class="container extra-wide-container hidden">
+        <button class="btn btn-secondary btn-small" onclick="showMenu()" style="width: auto; margin-bottom: 20px;">← Back to Menu</button>
+        
+        <div class="header">
+            <h1 class="title" style="font-size: 2rem;">Image Gallery</h1>
+        </div>
+
+        <div class="gallery-upload">
+            <h3 style="color: var(--accent-color); margin-bottom: 20px; font-weight: 600;">Post</h3>
+            <div class="form-group">
+                <div class="file-input-wrapper">
+                    <div class="file-input-btn">Choose Image</div>
+                    <input type="file" class="file-input" id="imageUpload" accept="image/*" onchange="handleImageSelect(event)">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Description (Optional)</label>
+                <input type="text" class="form-input" id="imageDescription" placeholder="Describe your image..." maxlength="100">
+            </div>
+            
+            <div class="file-preview" id="filePreview"></div>
+            
+            <button class="btn" id="uploadBtn" onclick="uploadImage()" disabled>Upload Image</button>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Community Images</h2>
+            <div class="gallery-grid" id="galleryGrid">
+                <div class="gallery-item" style="text-align: center; grid-column: 1 / -1;">
+                    <h3 style="color: var(--accent-color); margin-bottom: 15px;">No Images Yet!</h3>
+                    <p style="color: var(--text-secondary);">Be the first to share an image with the community!</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Dev Tools Page -->
-    <div id="devToolsPage" class="dev-container hidden">
-        <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+    <div id="devToolsPage" class="container extra-wide-container hidden">
+        <button class="btn btn-secondary btn-small" onclick="showMenu()" style="width: auto; margin-bottom: 20px;">← Back to Menu</button>
         
-        <div class="dev-header">
-            <h1 class="dev-title">Developer Tools</h1>
+        <div class="header">
+            <h1 class="title" style="font-size: 2rem;">Developer Tools</h1>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Chat Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalMessagesCount">0</div>
+                    <div class="stat-label">Total Messages</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="todayMessagesCount">0</div>
+                    <div class="stat-label">Today's Messages</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeUsersCount">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalImagesCount">0</div>
+                    <div class="stat-label">Total Images</div>
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -972,85 +1045,48 @@
         </div>
 
         <div class="section">
-            <h2 class="section-title">Ban Management</h2>
+            <h2 class="section-title">Moderation Actions</h2>
             <div class="links-grid">
                 <div class="link-item">
-                    <a href="#" onclick="showBanPage()">Ban Users</a>
+                    <a href="#" onclick="showBanPage()">Ban Management</a>
                 </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Chat Controls</h2>
-            <div class="chat-controls-container">
-                <div class="chat-stats">
-                    <div class="stat-item">
-                        <div class="stat-label">Total Messages</div>
-                        <div class="stat-value" id="totalMessagesCount">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Today's Messages</div>
-                        <div class="stat-value" id="todayMessagesCount">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Active Users</div>
-                        <div class="stat-value" id="activeUsersCount">0</div>
-                    </div>
+                <div class="link-item">
+                    <a href="#" onclick="deleteAllMessages()" style="color: var(--danger-color);">Clear ChatLogs</a>
                 </div>
-                
-                <button class="btn btn-danger" onclick="deleteAllMessages()">
-                    Delete All Messages
-                </button>
-                
-                <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border: 2px solid #ff6600; font-size: 0.9rem; color: #856404;">
-                    <strong>Warning:</strong> Deleting all messages is permanent and cannot be undone. This action will clear the entire chat history for all users.
+                <div class="link-item" id="deleteAllImagesItem">
+                    <a href="#" onclick="deleteAllImages()" style="color: var(--danger-color);">Clear All Images</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- User Info Page -->
-    <div id="userInfoPage" class="user-info-container hidden">
-        <button class="back-btn" onclick="showDevTools()">← Back to Dev Tools</button>
+    <!-- Ban Management Page -->
+    <div id="banPage" class="container wide-container hidden">
+        <button class="btn btn-secondary btn-small" onclick="showDevTools()" style="width: auto; margin-bottom: 20px;">← Back to Dev Tools</button>
         
-        <div class="user-info-header">
-            <h1 class="user-info-title">User Information</h1>
+        <div class="header">
+            <h1 class="title" style="font-size: 2rem;">Ban Management</h1>
         </div>
 
         <div class="section">
-            <div class="user-info-display" id="userInfoDisplay">
-                <!-- User info will be populated here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Ban Page -->
-    <div id="banPage" class="ban-container hidden">
-        <button class="back-btn" onclick="showDevTools()">← Back to Dev Tools</button>
-        
-        <div class="ban-header">
-            <h1 class="ban-title">Ban User</h1>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Select User to Ban</h2>
-            <div class="ban-user-list" id="banUserList">
+            <h2 class="section-title">Select User</h2>
+            <div class="user-list" id="banUserList" style="max-height: 250px;">
                 <!-- Non-mod users will be populated here -->
             </div>
         </div>
 
         <div class="section">
-            <div class="ban-controls">
-                <h3>Selected User: <span id="selectedUserToBan">None</span></h3>
+            <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; backdrop-filter: blur(10px);">
+                <h3 style="margin-bottom: 15px; color: var(--accent-color);">Selected User: <span id="selectedUserToBan">None</span></h3>
                 
-                <div class="ban-type-selector">
-                    <button class="ban-type-btn active" id="fullBanBtn" onclick="selectBanType('full')">Full Ban</button>
-                    <button class="ban-type-btn" id="textBanBtn" onclick="selectBanType('text')">Text Ban</button>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-secondary" id="fullBanBtn" onclick="selectBanType('full')" style="flex: 1;">Full Ban</button>
+                    <button class="btn btn-secondary" id="textBanBtn" onclick="selectBanType('text')" style="flex: 1;">Text Ban</button>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Ban Duration</label>
-                    <select class="ban-select" id="banDuration">
+                    <select class="form-select" id="banDuration">
                         <option value="30">30 Seconds</option>
                         <option value="3600">1 Hour</option>
                         <option value="86400">1 Day</option>
@@ -1058,56 +1094,50 @@
                         <option value="permanent" id="permaBanOption" style="display: none;">Permanent</option>
                     </select>
                 </div>
-                <button class="btn" onclick="executeBan()" id="executeBanBtn" disabled>Ban User</button>
+                <button class="btn btn-danger" onclick="executeBan()" id="executeBanBtn" disabled>Ban User</button>
             </div>
         </div>
     </div>
 
-    <!-- Chat Page -->
-    <div id="chatPage" class="chat-container hidden">
-        <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+    <!-- User Info Page -->
+    <div id="userInfoPage" class="container wide-container hidden">
+        <button class="btn btn-secondary btn-small" onclick="showDevTools()" style="width: auto; margin-bottom: 20px;">← Back to Dev Tools</button>
         
-        <div class="chat-header">
-            <h1 class="chat-title">Community Chat</h1>
+        <div class="header">
+            <h1 class="title" style="font-size: 2rem;">User Information</h1>
         </div>
 
-        <div id="textbanWarning" class="textban-warning hidden">
-            You are text banned and cannot send messages. Time remaining: <span id="textbanTimeRemaining"></span>
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
-            <!-- Chat messages will be populated here -->
-        </div>
-
-        <div class="chat-input-container">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." maxlength="500">
-            <button class="btn chat-send-btn" onclick="sendMessage()" id="chatSendBtn">Send</button>
+        <div class="section">
+            <div id="userInfoDisplay" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; backdrop-filter: blur(10px);">
+                <!-- User info will be populated here -->
+            </div>
         </div>
     </div>
 
     <script>
         // ========================================
-        // FIXED SYNC SERVICE
+        // ENHANCED SYNC SERVICE
         // ========================================
         
-        class SyncService {
+        class EnhancedSyncService {
             constructor() {
-                // REMOVED JSONBin - using memory-only storage for demonstration
-                // In production, you'd replace this with your actual backend API
                 this.isOnline = navigator.onLine;
                 this.syncStatus = 'connecting';
                 this.lastSyncTime = 0;
                 this.syncInterval = null;
+                this.retryCount = 0;
+                this.maxRetries = 3;
                 
                 this.initializeSync();
+                this.createParticles();
             }
             
             initializeSync() {
                 this.updateSyncStatus('connecting');
                 
-                // Check network status
                 window.addEventListener('online', () => {
                     this.isOnline = true;
+                    this.retryCount = 0;
                     this.updateSyncStatus('synced');
                 });
                 
@@ -1116,25 +1146,21 @@
                     this.updateSyncStatus('offline');
                 });
                 
-                // Simulate successful connection
+                // Simulate connection
                 setTimeout(() => {
                     if (this.isOnline) {
                         this.updateSyncStatus('synced');
                     } else {
                         this.updateSyncStatus('offline');
                     }
-                }, 1000);
+                }, 1500);
                 
-                // Set up periodic status updates
+                // Periodic sync updates
                 this.syncInterval = setInterval(() => {
                     if (this.isOnline && this.syncStatus === 'synced') {
-                        // Keep showing "Online" status when synced
-                        const syncStatusEl = document.getElementById('syncStatus');
-                        if (syncStatusEl && syncStatusEl.textContent === 'Synced') {
-                            syncStatusEl.textContent = 'Online';
-                        }
+                        this.performHeartbeat();
                     }
-                }, 3000);
+                }, 10000);
             }
             
             updateSyncStatus(status) {
@@ -1145,54 +1171,76 @@
                     
                     switch (status) {
                         case 'connecting':
-                            syncStatusEl.textContent = 'Connecting...';
+                            syncStatusEl.innerHTML = '<span class="loading"></span> Connecting...';
                             break;
                         case 'syncing':
-                            syncStatusEl.textContent = 'Syncing...';
+                            syncStatusEl.innerHTML = '<span class="loading"></span> Syncing...';
                             break;
                         case 'synced':
-                            syncStatusEl.textContent = 'Synced';
-                            setTimeout(() => {
-                                if (this.syncStatus === 'synced') {
-                                    syncStatusEl.textContent = 'Online';
-                                }
-                            }, 2000);
+                            syncStatusEl.innerHTML = '✓ Online';
                             break;
                         case 'error':
-                            syncStatusEl.textContent = 'Local Mode';
+                            syncStatusEl.innerHTML = '⚠ Local Mode';
                             break;
                         case 'offline':
-                            syncStatusEl.textContent = 'Offline';
+                            syncStatusEl.innerHTML = '✗ Offline';
                             break;
                     }
                 }
             }
             
-            // Simulate sync - in production this would sync with your backend
             async performSync() {
                 try {
                     this.updateSyncStatus('syncing');
-                    
-                    // Simulate network delay
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
+                    // Simulate sync delay
+                    await new Promise(resolve => setTimeout(resolve, 800));
                     this.updateSyncStatus('synced');
                     this.lastSyncTime = Date.now();
-                    
+                    this.retryCount = 0;
                 } catch (error) {
                     console.error('Sync error:', error);
-                    this.updateSyncStatus('error');
+                    this.retryCount++;
+                    if (this.retryCount >= this.maxRetries) {
+                        this.updateSyncStatus('error');
+                    } else {
+                        setTimeout(() => this.performSync(), 2000);
+                    }
                 }
             }
             
-            // Manual sync trigger
+            async performHeartbeat() {
+                // Simulate heartbeat
+                const syncStatusEl = document.getElementById('syncStatus');
+                if (syncStatusEl && syncStatusEl.textContent === 'Online') {
+                    syncStatusEl.textContent = 'Active';
+                    setTimeout(() => {
+                        if (this.syncStatus === 'synced') {
+                            syncStatusEl.textContent = 'Online';
+                        }
+                    }, 1000);
+                }
+            }
+            
+            createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                if (!particlesContainer) return;
+                
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 6 + 's';
+                    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
             async forceSync() {
                 if (this.isOnline) {
                     await this.performSync();
                 }
             }
             
-            // Clean up
             destroy() {
                 if (this.syncInterval) {
                     clearInterval(this.syncInterval);
@@ -1200,24 +1248,26 @@
             }
         }
         
-        // Initialize sync service
+        // ========================================
+        // APP VARIABLES
+        // ========================================
+        
         let syncService = null;
-        
-        // ========================================
-        // ORIGINAL APP CODE (CLEANED UP)
-        // ========================================
-        
         let currentUser = null;
         let users = {};
         let selectedUserToBan = null;
         let chatMessages = [];
+        let galleryImages = [];
         let chatUpdateInterval = null;
-        let sessionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         let lastChatUpdate = 0;
         let selectedBanType = 'full';
+        let selectedImageFile = null;
 
-        // Sound effects
-        function playClickSound() {
+        // ========================================
+        // ENHANCED SOUND EFFECTS
+        // ========================================
+        
+        function playSound(type) {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
@@ -1226,33 +1276,33 @@
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
                 
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-            } catch (e) {
-                // Ignore audio errors
-            }
-        }
-
-        function playBuzzerSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = 'square';
-                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-                
-                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                switch (type) {
+                    case 'click':
+                        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        break;
+                    case 'success':
+                        oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                        oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        break;
+                    case 'error':
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        break;
+                    case 'notification':
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(1047, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        break;
+                }
                 
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.5);
@@ -1261,186 +1311,188 @@
             }
         }
 
-        // Add click sound to all buttons
-        function addClickSoundToButtons() {
-            const buttons = document.querySelectorAll('button, .link-item, .ban-user-item, .switch-link');
+        function addSoundEffects() {
+            const buttons = document.querySelectorAll('button, .link-item, .switch-link');
             buttons.forEach(button => {
-                button.addEventListener('click', playClickSound);
+                button.addEventListener('click', () => playSound('click'));
             });
         }
 
-        // Check if username contains "demo" (case insensitive)
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
         function isDemoAccount(username) {
             return username.toLowerCase().includes('demo');
         }
 
-        // Initialize users from localStorage or create defaults
-        function initializeUsers() {
-            const storedUsers = localStorage.getItem('checkerboardMenuUsers');
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: var(--glass-bg);
+                backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border);
+                border-radius: 12px;
+                padding: 15px 20px;
+                color: var(--text-primary);
+                font-weight: 600;
+                z-index: 2000;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            `;
             
-            if (storedUsers) {
-                try {
-                    users = JSON.parse(storedUsers);
-                } catch (e) {
-                    console.error('Error parsing stored users:', e);
-                    users = {};
+            if (type === 'success') {
+                notification.style.borderColor = 'var(--accent-color)';
+                notification.style.boxShadow = '0 10px 30px rgba(0, 255, 136, 0.3)';
+                playSound('success');
+            } else if (type === 'error') {
+                notification.style.borderColor = 'var(--danger-color)';
+                notification.style.boxShadow = '0 10px 30px rgba(255, 68, 68, 0.3)';
+                playSound('error');
+            } else {
+                playSound('notification');
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add CSS for notification animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
                 }
             }
             
-            // Create/update preset users - ALWAYS ensure 24inch is dev
-            users['demo'] = users['demo'] || { email: 'demo@test.com', password: 'demo', role: 'user', banUntil: null, textBanUntil: null };
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ========================================
+        // IMAGE DOWNLOAD FUNCTION
+        // ========================================
+        
+        function downloadImage(imageIndex) {
+            if (imageIndex < 0 || imageIndex >= galleryImages.length) {
+                showNotification('Image not found.', 'error');
+                return;
+            }
+            
+            const image = galleryImages[imageIndex];
+            
+            try {
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.href = image.imageData;
+                
+                // Generate filename with timestamp if no original filename
+                const timestamp = new Date(image.uploadDate).toISOString().slice(0, 19).replace(/[:.]/g, '-');
+                const filename = image.filename || `pinkout-image-${timestamp}.png`;
+                
+                link.download = filename;
+                
+                // Temporarily add to DOM and trigger click
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification(`Image "${filename}" downloaded successfully! 📥`, 'success');
+            } catch (error) {
+                console.error('Download error:', error);
+                showNotification('Failed to download image. Please try again.', 'error');
+            }
+        }
+
+        // ========================================
+        // USER MANAGEMENT
+        // ========================================
+        
+        function initializeUsers() {
+            users['demo'] = users['demo'] || { 
+                email: 'demo@test.com', 
+                password: 'demo', 
+                role: 'user', 
+                banUntil: null, 
+                textBanUntil: null,
+                joinDate: Date.now() - (30 * 24 * 60 * 60 * 1000) // 30 days ago
+            };
             users['24inch'] = { 
                 email: 'not.unique.walls@gmail.com', 
                 password: 'CoolDude24', 
                 role: 'dev', 
                 banUntil: null,
-                textBanUntil: null
+                textBanUntil: null,
+                joinDate: Date.now() - (90 * 24 * 60 * 60 * 1000) // 90 days ago
             };
 
-            // Force update existing users to have roles and ban properties if they don't
             Object.keys(users).forEach(username => {
-                if (!users[username].role) {
-                    if (username === '24inch') {
-                        users[username].role = 'dev';
-                    } else {
-                        users[username].role = 'user';
-                    }
-                }
-                
-                if (users[username].banUntil === undefined) {
-                    users[username].banUntil = null;
-                }
-                
-                if (users[username].textBanUntil === undefined) {
-                    users[username].textBanUntil = null;
-                }
+                const user = users[username];
+                if (!user.role) user.role = username === '24inch' ? 'dev' : 'user';
+                if (user.banUntil === undefined) user.banUntil = null;
+                if (user.textBanUntil === undefined) user.textBanUntil = null;
+                if (!user.joinDate) user.joinDate = Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000;
             });
-
-            saveUsers();
         }
 
-        // Initialize chat messages from localStorage
         function initializeChatMessages() {
-            const storedData = localStorage.getItem('checkerboardMenuChatMessages');
-            if (storedData) {
-                try {
-                    const parsed = JSON.parse(storedData);
-                    chatMessages = parsed.messages || [];
-                    lastChatUpdate = parsed.lastUpdate || Date.now();
-                } catch (e) {
-                    console.error('Error parsing stored chat messages:', e);
-                    chatMessages = [];
-                    lastChatUpdate = Date.now();
+            chatMessages = [
+                {
+                    username: 'PinkBot',
+                    content: 'Welcome to the PINKOUT chat room',
+                    timestamp: Date.now() - 60000
+                },
+                {
+                    username: 'PinkBot',
+                    content: 'you betteer be nice',
+                    timestamp: Date.now() - 30000
                 }
-            } else {
-                chatMessages = [];
-                lastChatUpdate = Date.now();
-            }
+            ];
+            lastChatUpdate = Date.now();
         }
 
-        // Save chat messages to localStorage
-        function saveChatMessages() {
-            const chatData = {
-                messages: chatMessages,
-                lastUpdate: Date.now()
-            };
-            localStorage.setItem('checkerboardMenuChatMessages', JSON.stringify(chatData));
-            
-            // Trigger sync
-            if (syncService) {
-                syncService.forceSync();
-            }
+        function initializeGallery() {
+            galleryImages = [];
         }
 
-        // Save users to localStorage
-        function saveUsers() {
-            localStorage.setItem('checkerboardMenuUsers', JSON.stringify(users));
-            
-            // Trigger sync
-            if (syncService) {
-                syncService.forceSync();
-            }
-        }
-
-        // Delete all chat messages (DEV only)
-        function deleteAllMessages() {
-            if (!currentUser || users[currentUser].role !== 'dev') {
-                alert('Access denied. This feature is only available to developers.');
-                return;
-            }
-
-            const confirmDelete = confirm(
-                'Are you sure you want to delete ALL chat messages?\n\n' +
-                'This action is PERMANENT and cannot be undone.\n' +
-                'All chat history will be lost for all users.\n\n' +
-                'Click OK to proceed or Cancel to abort.'
-            );
-
-            if (!confirmDelete) return;
-
-            const doubleConfirm = confirm(
-                'FINAL CONFIRMATION\n\n' +
-                'You are about to permanently delete ' + chatMessages.length + ' messages.\n' +
-                'This cannot be undone.\n\n' +
-                'Are you absolutely sure?'
-            );
-
-            if (!doubleConfirm) return;
-
-            chatMessages = [];
-            saveChatMessages();
-            updateChatStats();
-            alert('All chat messages have been deleted successfully.');
-        }
-
-        // Update chat statistics
-        function updateChatStats() {
-            const totalMessages = chatMessages.length;
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayTimestamp = today.getTime();
-            
-            const todayMessages = chatMessages.filter(msg => msg.timestamp >= todayTimestamp).length;
-            
-            const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-            const activeUsers = new Set(
-                chatMessages
-                    .filter(msg => msg.timestamp >= oneDayAgo)
-                    .map(msg => msg.username)
-            ).size;
-            
-            const totalEl = document.getElementById('totalMessagesCount');
-            const todayEl = document.getElementById('todayMessagesCount');
-            const activeEl = document.getElementById('activeUsersCount');
-            
-            if (totalEl) totalEl.textContent = totalMessages;
-            if (todayEl) todayEl.textContent = todayMessages;
-            if (activeEl) activeEl.textContent = activeUsers;
-        }
-
-        // Start real-time chat updates
-        function startChatUpdates() {
-            if (chatUpdateInterval) {
-                clearInterval(chatUpdateInterval);
-            }
-            chatUpdateInterval = setInterval(() => {
-                updateChatUI();
-                if (!document.getElementById('chatPage').classList.contains('hidden')) {
-                    loadChatMessages();
-                }
-            }, 5000);
-        }
-
-        // Stop real-time chat updates
-        function stopChatUpdates() {
-            if (chatUpdateInterval) {
-                clearInterval(chatUpdateInterval);
-                chatUpdateInterval = null;
-            }
-        }
-
-        // Check if user is banned
+        // ========================================
+        // BAN SYSTEM
+        // ========================================
+        
         function isUserBanned(username) {
             const user = users[username];
             if (!user || !user.banUntil) return false;
@@ -1450,14 +1502,12 @@
             const now = Date.now();
             if (now >= user.banUntil) {
                 user.banUntil = null;
-                saveUsers();
                 return false;
             }
             
             return true;
         }
 
-        // Check if user is text banned
         function isUserTextBanned(username) {
             const user = users[username];
             if (!user || !user.textBanUntil) return false;
@@ -1467,14 +1517,12 @@
             const now = Date.now();
             if (now >= user.textBanUntil) {
                 user.textBanUntil = null;
-                saveUsers();
                 return false;
             }
             
             return true;
         }
 
-        // Get ban time remaining
         function getBanTimeRemaining(username) {
             const user = users[username];
             if (!user || !user.banUntil) return null;
@@ -1497,7 +1545,6 @@
             return `${seconds} second(s)`;
         }
 
-        // Get text ban time remaining
         function getTextBanTimeRemaining(username) {
             const user = users[username];
             if (!user || !user.textBanUntil) return null;
@@ -1520,70 +1567,122 @@
             return `${seconds} second(s)`;
         }
 
-        // Select ban type
-        function selectBanType(type) {
-            selectedBanType = type;
-            
-            const fullBanBtn = document.getElementById('fullBanBtn');
-            const textBanBtn = document.getElementById('textBanBtn');
-            
-            if (type === 'full') {
-                fullBanBtn.classList.add('active');
-                textBanBtn.classList.remove('active');
-            } else {
-                fullBanBtn.classList.remove('active');
-                textBanBtn.classList.add('active');
-            }
-            
-            const executeBanBtn = document.getElementById('executeBanBtn');
-            if (selectedUserToBan) {
-                executeBanBtn.textContent = type === 'full' ? 'Ban User' : 'Text Ban User';
-            }
-        }
-
-        // Navigation functions
+        // ========================================
+        // NAVIGATION FUNCTIONS
+        // ========================================
+        
         function showLogin() {
+            hideAllPages();
             document.getElementById('loginPage').classList.remove('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
-            document.getElementById('menuPage').classList.add('hidden');
-            document.getElementById('devToolsPage').classList.add('hidden');
-            document.getElementById('userInfoPage').classList.add('hidden');
-            document.getElementById('banPage').classList.add('hidden');
-            document.getElementById('chatPage').classList.add('hidden');
             stopChatUpdates();
-            refreshClickSounds();
+            addSoundEffects();
         }
 
         function showSignup() {
-            document.getElementById('loginPage').classList.add('hidden');
+            hideAllPages();
             document.getElementById('signupPage').classList.remove('hidden');
-            document.getElementById('menuPage').classList.add('hidden');
-            document.getElementById('devToolsPage').classList.add('hidden');
-            document.getElementById('userInfoPage').classList.add('hidden');
-            document.getElementById('banPage').classList.add('hidden');
-            document.getElementById('chatPage').classList.add('hidden');
             stopChatUpdates();
-            refreshClickSounds();
+            addSoundEffects();
         }
 
         function showMenu() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
+            hideAllPages();
             document.getElementById('menuPage').classList.remove('hidden');
-            document.getElementById('devToolsPage').classList.add('hidden');
-            document.getElementById('userInfoPage').classList.add('hidden');
-            document.getElementById('banPage').classList.add('hidden');
-            document.getElementById('chatPage').classList.add('hidden');
             stopChatUpdates();
-            document.getElementById('currentUser').textContent = currentUser;
             
-            // Reset all tags first
+            document.getElementById('currentUser').textContent = currentUser;
+            updateUserTags();
+            addSoundEffects();
+        }
+
+        function showChat() {
+            hideAllPages();
+            document.getElementById('chatPage').classList.remove('hidden');
+            
+            updateChatUI();
+            loadChatMessages();
+            startChatUpdates();
+            addSoundEffects();
+        }
+
+        function showGallery() {
+            hideAllPages();
+            document.getElementById('galleryPage').classList.remove('hidden');
+            stopChatUpdates();
+            loadGalleryImages();
+            addSoundEffects();
+        }
+
+        function showDevTools() {
+            hideAllPages();
+            document.getElementById('devToolsPage').classList.remove('hidden');
+            stopChatUpdates();
+            populateUserList();
+            updateChatStats();
+            updateDevToolsVisibility();
+            addSoundEffects();
+        }
+
+        function showBanPage() {
+            hideAllPages();
+            document.getElementById('banPage').classList.remove('hidden');
+            stopChatUpdates();
+            
+            const currentUserRole = users[currentUser].role;
+            const permaBanOption = document.getElementById('permaBanOption');
+            if (currentUserRole === 'dev') {
+                permaBanOption.style.display = 'block';
+            } else {
+                permaBanOption.style.display = 'none';
+            }
+            
+            selectedBanType = 'full';
+            selectBanType('full');
+            populateBanUserList();
+            selectedUserToBan = null;
+            document.getElementById('selectedUserToBan').textContent = 'None';
+            document.getElementById('executeBanBtn').disabled = true;
+            addSoundEffects();
+        }
+
+        function showUserInfo(username) {
+            hideAllPages();
+            document.getElementById('userInfoPage').classList.remove('hidden');
+            stopChatUpdates();
+            populateUserInfo(username);
+            addSoundEffects();
+        }
+
+        function hideAllPages() {
+            const pages = [
+                'loginPage', 'signupPage', 'menuPage', 'chatPage', 
+                'galleryPage', 'devToolsPage', 'banPage', 'userInfoPage'
+            ];
+            pages.forEach(pageId => {
+                document.getElementById(pageId).classList.add('hidden');
+            });
+        }
+
+        function updateDevToolsVisibility() {
+            const currentUserRole = users[currentUser]?.role;
+            const deleteAllImagesItem = document.getElementById('deleteAllImagesItem');
+            
+            if (currentUserRole === 'dev') {
+                deleteAllImagesItem.style.display = 'block';
+            } else {
+                deleteAllImagesItem.style.display = 'none';
+            }
+        }
+
+        function updateUserTags() {
+            // Reset all tags
             document.getElementById('modTag').classList.add('hidden');
             document.getElementById('devTag').classList.add('hidden');
             document.getElementById('demoTag').classList.add('hidden');
+            document.getElementById('bannedTag').classList.add('hidden');
+            document.getElementById('textbannedTag').classList.add('hidden');
             document.getElementById('devToolsBtn').classList.add('hidden');
             
-            // Check user role and show appropriate tags/buttons
             const user = users[currentUser];
             if (user) {
                 if (user.role === 'dev') {
@@ -1599,19 +1698,12 @@
                 document.getElementById('demoTag').classList.remove('hidden');
             }
 
-            updateMenuTags();
-            refreshClickSounds();
-        }
-
-        function updateMenuTags() {
             if (isUserBanned(currentUser)) {
                 document.getElementById('bannedTag').classList.remove('hidden');
                 const timeRemaining = getBanTimeRemaining(currentUser);
                 if (timeRemaining) {
                     document.getElementById('bannedTag').textContent = `BANNED (${timeRemaining})`;
                 }
-            } else {
-                document.getElementById('bannedTag').classList.add('hidden');
             }
 
             if (isUserTextBanned(currentUser)) {
@@ -1620,80 +1712,30 @@
                 if (timeRemaining) {
                     document.getElementById('textbannedTag').textContent = `TEXT BANNED (${timeRemaining})`;
                 }
-            } else {
-                document.getElementById('textbannedTag').classList.add('hidden');
             }
         }
 
-        function showDevTools() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
-            document.getElementById('menuPage').classList.add('hidden');
-            document.getElementById('devToolsPage').classList.remove('hidden');
-            document.getElementById('userInfoPage').classList.add('hidden');
-            document.getElementById('banPage').classList.add('hidden');
-            document.getElementById('chatPage').classList.add('hidden');
-            stopChatUpdates();
-            populateUserList();
-            updateChatStats();
-            refreshClickSounds();
-        }
-
-        function showUserInfo(username) {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
-            document.getElementById('menuPage').classList.add('hidden');
-            document.getElementById('devToolsPage').classList.add('hidden');
-            document.getElementById('userInfoPage').classList.remove('hidden');
-            document.getElementById('banPage').classList.add('hidden');
-            document.getElementById('chatPage').classList.add('hidden');
-            stopChatUpdates();
-            populateUserInfo(username);
-            refreshClickSounds();
-        }
-
-        function showBanPage() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
-            document.getElementById('menuPage').classList.add('hidden');
-            document.getElementById('devToolsPage').classList.add('hidden');
-            document.getElementById('userInfoPage').classList.add('hidden');
-            document.getElementById('banPage').classList.remove('hidden');
-            document.getElementById('chatPage').classList.add('hidden');
-            stopChatUpdates();
-            
-            const currentUserRole = users[currentUser].role;
-            const permaBanOption = document.getElementById('permaBanOption');
-            if (currentUserRole === 'dev') {
-                permaBanOption.style.display = 'block';
-            } else {
-                permaBanOption.style.display = 'none';
+        // ========================================
+        // CHAT FUNCTIONS
+        // ========================================
+        
+        function startChatUpdates() {
+            if (chatUpdateInterval) {
+                clearInterval(chatUpdateInterval);
             }
-            
-            selectedBanType = 'full';
-            selectBanType('full');
-            
-            populateBanUserList();
-            selectedUserToBan = null;
-            document.getElementById('selectedUserToBan').textContent = 'None';
-            document.getElementById('executeBanBtn').disabled = true;
-            document.getElementById('executeBanBtn').textContent = 'Ban User';
-            refreshClickSounds();
+            chatUpdateInterval = setInterval(() => {
+                updateChatUI();
+                if (!document.getElementById('chatPage').classList.contains('hidden')) {
+                    loadChatMessages();
+                }
+            }, 3000);
         }
 
-        function showChat() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('signupPage').classList.add('hidden');
-            document.getElementById('menuPage').classList.add('hidden');
-            document.getElementById('devToolsPage').classList.add('hidden');
-            document.getElementById('userInfoPage').classList.add('hidden');
-            document.getElementById('banPage').classList.add('hidden');
-            document.getElementById('chatPage').classList.remove('hidden');
-            
-            updateChatUI();
-            loadChatMessages();
-            startChatUpdates();
-            refreshClickSounds();
+        function stopChatUpdates() {
+            if (chatUpdateInterval) {
+                clearInterval(chatUpdateInterval);
+                chatUpdateInterval = null;
+            }
         }
 
         function updateChatUI() {
@@ -1725,41 +1767,51 @@
             chatMessagesContainer.innerHTML = '';
             
             if (chatMessages.length === 0) {
-                chatMessagesContainer.innerHTML = '<div class="chat-message"><div class="message-content" style="text-align: center; color: #666; font-style: italic;">No messages yet. Be the first to say something!</div></div>';
+                chatMessagesContainer.innerHTML = `
+                    <div class="chat-message">
+                        <div class="message-content" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                            No messages yet. Be the first to say something! 💬
+                        </div>
+                    </div>
+                `;
                 return;
             }
             
             chatMessages.forEach((message, index) => {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'chat-message';
+                messageElement.style.animationDelay = `${index * 0.1}s`;
                 
                 const messageTime = new Date(message.timestamp).toLocaleString();
                 
                 let roleTag = '';
                 const user = users[message.username];
                 if (user) {
-                    if (user.role === 'dev') roleTag = '<span class="dev-tag">DEV</span>';
-                    else if (user.role === 'mod') roleTag = '<span class="mod-tag">MOD</span>';
+                    if (user.role === 'dev') roleTag = '<span class="tag dev-tag">DEV</span>';
+                    else if (user.role === 'mod') roleTag = '<span class="tag mod-tag">MOD</span>';
                 }
                 
                 let demoTag = '';
-                if (isDemoAccount(message.username)) demoTag = '<span class="demo-tag">DEMO</span>';
+                if (isDemoAccount(message.username)) demoTag = '<span class="tag demo-tag">DEMO</span>';
                 
                 const currentUserRole = users[currentUser].role;
                 const messageUserRole = user ? user.role : 'user';
                 let deleteButton = '';
                 
-                if (currentUserRole === 'dev') {
-                    deleteButton = `<button class="message-delete-btn" onclick="deleteMessage(${index})">Delete</button>`;
-                } else if (currentUserRole === 'mod' && messageUserRole === 'user') {
-                    deleteButton = `<button class="message-delete-btn" onclick="deleteMessage(${index})">Delete</button>`;
+                if (currentUserRole === 'dev' || 
+                    (currentUserRole === 'mod' && messageUserRole === 'user')) {
+                    deleteButton = `<button class="btn btn-danger btn-small" onclick="deleteMessage(${index})" style="margin-left: 10px;">×</button>`;
                 }
                 
                 messageElement.innerHTML = `
                     <div class="message-header">
-                        ${message.username} ${roleTag} ${demoTag}
-                        <span class="message-time">${messageTime}</span>
-                        ${deleteButton}
+                        <div>
+                            ${message.username} ${roleTag} ${demoTag}
+                        </div>
+                        <div>
+                            <span class="message-time">${messageTime}</span>
+                            ${deleteButton}
+                        </div>
                     </div>
                     <div class="message-content">${escapeHtml(message.content)}</div>
                 `;
@@ -1775,27 +1827,23 @@
             const messageToDelete = chatMessages[messageIndex];
             
             if (!messageToDelete) {
-                alert('Message not found.');
+                showNotification('Message not found.', 'error');
                 return;
             }
             
             const messageUser = users[messageToDelete.username];
             const messageUserRole = messageUser ? messageUser.role : 'user';
             
-            if (currentUserRole === 'dev') {
-                if (confirm(`Are you sure you want to delete this message from ${messageToDelete.username}?`)) {
+            if (currentUserRole === 'dev' || 
+                (currentUserRole === 'mod' && messageUserRole === 'user')) {
+                if (confirm(`Delete message from ${messageToDelete.username}?`)) {
                     chatMessages.splice(messageIndex, 1);
-                    saveChatMessages();
                     loadChatMessages();
-                }
-            } else if (currentUserRole === 'mod' && messageUserRole === 'user') {
-                if (confirm(`Are you sure you want to delete this message from ${messageToDelete.username}?`)) {
-                    chatMessages.splice(messageIndex, 1);
-                    saveChatMessages();
-                    loadChatMessages();
+                    if (syncService) syncService.forceSync();
+                    showNotification('Message deleted successfully.', 'success');
                 }
             } else {
-                alert('You do not have permission to delete this message.');
+                showNotification('You do not have permission to delete this message.', 'error');
             }
         }
 
@@ -1806,12 +1854,12 @@
             if (!messageContent) return;
             
             if (isUserBanned(currentUser)) {
-                alert('You are banned and cannot send messages.');
+                showNotification('You are banned and cannot send messages.', 'error');
                 return;
             }
             
             if (isUserTextBanned(currentUser)) {
-                alert('You are text banned and cannot send messages.');
+                showNotification('You are text banned and cannot send messages.', 'error');
                 return;
             }
             
@@ -1822,16 +1870,335 @@
             };
             
             chatMessages.push(message);
-            saveChatMessages();
             loadChatMessages();
             
+            if (syncService) syncService.forceSync();
+            
             chatInput.value = '';
+            showNotification('Message sent!', 'success');
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function deleteAllMessages() {
+            if (!currentUser || users[currentUser].role !== 'dev') {
+                showNotification('Access denied. Developer privileges required.', 'error');
+                return;
+            }
+
+            const confirmDelete = confirm(
+                `Delete ALL ${chatMessages.length} messages?\n\nThis action is PERMANENT and cannot be undone.`
+            );
+
+            if (!confirmDelete) return;
+
+            const doubleConfirm = confirm(
+                'FINAL CONFIRMATION\n\nAre you absolutely sure you want to delete all messages?'
+            );
+
+            if (!doubleConfirm) return;
+
+            chatMessages = [];
+            updateChatStats();
+            if (syncService) syncService.forceSync();
+            showNotification('All chat messages deleted successfully.', 'success');
+        }
+
+        function deleteAllImages() {
+            if (!currentUser || users[currentUser].role !== 'dev') {
+                showNotification('Access denied. Developer privileges required.', 'error');
+                return;
+            }
+
+            const confirmDelete = confirm(
+                `Delete ALL ${galleryImages.length} images?\n\nThis action is PERMANENT and cannot be undone.`
+            );
+
+            if (!confirmDelete) return;
+
+            const doubleConfirm = confirm(
+                'FINAL CONFIRMATION\n\nAre you absolutely sure you want to delete all images?'
+            );
+
+            if (!doubleConfirm) return;
+
+            galleryImages = [];
+            updateChatStats();
+            if (syncService) syncService.forceSync();
+            showNotification('All images deleted successfully.', 'success');
+        }
+
+        function updateChatStats() {
+            const totalMessages = chatMessages.length;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTimestamp = today.getTime();
+            
+            const todayMessages = chatMessages.filter(msg => msg.timestamp >= todayTimestamp).length;
+            
+            const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+            const activeUsers = new Set(
+                chatMessages
+                    .filter(msg => msg.timestamp >= oneDayAgo)
+                    .map(msg => msg.username)
+            ).size;
+
+            const totalImages = galleryImages.length;
+            
+            const totalEl = document.getElementById('totalMessagesCount');
+            const todayEl = document.getElementById('todayMessagesCount');
+            const activeEl = document.getElementById('activeUsersCount');
+            const imagesEl = document.getElementById('totalImagesCount');
+            
+            if (totalEl) totalEl.textContent = totalMessages;
+            if (todayEl) todayEl.textContent = todayMessages;
+            if (activeEl) activeEl.textContent = activeUsers;
+            if (imagesEl) imagesEl.textContent = totalImages;
+        }
+
+        // ========================================
+        // GALLERY FUNCTIONS
+        // ========================================
+        
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('filePreview');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select a valid image file!', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image must be smaller than 5MB!', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                
+                selectedImageFile = file;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `
+                        <div style="text-align: center; margin-top: 15px;">
+                            <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                                <strong>${file.name}</strong> (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                            </p>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+                
+                uploadBtn.disabled = false;
+                showNotification('Image selected successfully!', 'success');
+            } else {
+                selectedImageFile = null;
+                preview.innerHTML = '';
+                uploadBtn.disabled = true;
+            }
+        }
+        
+        function uploadImage() {
+            if (!selectedImageFile) {
+                showNotification('Please select an image first!', 'error');
+                return;
+            }
+            
+            const description = document.getElementById('imageDescription').value.trim();
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = {
+                    id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    username: currentUser,
+                    imageData: e.target.result,
+                    description: description || '',
+                    filename: selectedImageFile.name,
+                    uploadDate: Date.now()
+                };
+                
+                galleryImages.unshift(imageData);
+                
+                // Reset form
+                document.getElementById('imageUpload').value = '';
+                document.getElementById('imageDescription').value = '';
+                document.getElementById('filePreview').innerHTML = '';
+                document.getElementById('uploadBtn').disabled = true;
+                selectedImageFile = null;
+                
+                loadGalleryImages();
+                
+                if (syncService) syncService.forceSync();
+                
+                showNotification('Image uploaded successfully! 🎉', 'success');
+            };
+            reader.readAsDataURL(selectedImageFile);
+        }
+        
+        function loadGalleryImages() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            if (!galleryGrid) return;
+            
+            galleryGrid.innerHTML = '';
+            
+            if (galleryImages.length === 0) {
+                galleryGrid.innerHTML = `
+                    <div style="text-align: center; grid-column: 1 / -1; padding: 40px;">
+                        <h3 style="color: var(--accent-color); margin-bottom: 15px; font-size: 1.5rem;">📸 No Images Yet!</h3>
+                        <p style="color: var(--text-secondary); font-size: 1.1rem;">Be the first to share an image with the community!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            galleryImages.forEach((image, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.style.animationDelay = `${index * 0.1}s`;
+                
+                const uploadDate = new Date(image.uploadDate).toLocaleDateString();
+                
+                const currentUserRole = users[currentUser].role;
+                const imageUserRole = users[image.username] ? users[image.username].role : 'user';
+                let deleteButton = '';
+                
+                if (currentUser === image.username || currentUserRole === 'dev' || 
+                    (currentUserRole === 'mod' && imageUserRole === 'user')) {
+                    deleteButton = `
+                        <button class="btn btn-danger btn-small" onclick="deleteImage(${index})" 
+                                style="position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; padding: 0; font-size: 1.2rem;">
+                            ×
+                        </button>
+                    `;
+                }
+                
+                let userTags = '';
+                const user = users[image.username];
+                if (user) {
+                    if (user.role === 'dev') userTags += '<span class="tag dev-tag">DEV</span>';
+                    else if (user.role === 'mod') userTags += '<span class="tag mod-tag">MOD</span>';
+                }
+                if (isDemoAccount(image.username)) userTags += '<span class="tag demo-tag">DEMO</span>';
+                
+                galleryItem.innerHTML = `
+                    ${deleteButton}
+                    <img src="${image.imageData}" alt="${image.description}" class="gallery-image">
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--accent-color); margin-bottom: 5px;">
+                            ${image.username} ${userTags}
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            ${uploadDate}
+                        </div>
+                        ${image.description ? `<div style="font-size: 0.9rem; color: var(--text-primary); line-height: 1.3; margin-bottom: 15px;">${escapeHtml(image.description)}</div>` : ''}
+                        <div class="gallery-actions">
+                            <button class="btn btn-download btn-small" onclick="downloadImage(${index})">
+                                📥 Download
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                galleryGrid.appendChild(galleryItem);
+            });
+        }
+        
+        function deleteImage(imageIndex) {
+            if (imageIndex < 0 || imageIndex >= galleryImages.length) {
+                showNotification('Image not found.', 'error');
+                return;
+            }
+            
+            const imageToDelete = galleryImages[imageIndex];
+            const currentUserRole = users[currentUser].role;
+            const imageUserRole = users[imageToDelete.username] ? users[imageToDelete.username].role : 'user';
+            
+            if (currentUser === imageToDelete.username || currentUserRole === 'dev' || 
+                (currentUserRole === 'mod' && imageUserRole === 'user')) {
+                
+                if (confirm(`Delete image from ${imageToDelete.username}?`)) {
+                    galleryImages.splice(imageIndex, 1);
+                    loadGalleryImages();
+                    
+                    if (syncService) syncService.forceSync();
+                    showNotification('Image deleted successfully.', 'success');
+                }
+            } else {
+                showNotification('You do not have permission to delete this image.', 'error');
+            }
+        }
+
+        // ========================================
+        // USER MANAGEMENT FUNCTIONS
+        // ========================================
+        
+        function populateUserList() {
+            const userListElement = document.getElementById('userList');
+            if (!userListElement) return;
+            
+            userListElement.innerHTML = '';
+            
+            const currentUserRole = users[currentUser].role;
+            
+            Object.keys(users).forEach(username => {
+                const user = users[username];
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                
+                const isCurrentUser = username === currentUser;
+                const isBanned = isUserBanned(username);
+                const isTextBanned = isUserTextBanned(username);
+                
+                let roleTag = '';
+                if (user.role === 'dev') roleTag = '<span class="tag dev-tag">DEV</span>';
+                else if (user.role === 'mod') roleTag = '<span class="tag mod-tag">MOD</span>';
+                
+                let demoTag = '';
+                if (isDemoAccount(username)) demoTag = '<span class="tag demo-tag">DEMO</span>';
+                
+                let statusTags = '';
+                if (isBanned) statusTags += '<span class="tag banned-tag">BANNED</span>';
+                if (isTextBanned) statusTags += '<span class="tag textbanned-tag">TEXT BANNED</span>';
+                
+                let actions = `
+                    <button class="btn btn-secondary btn-small" onclick="showUserInfo('${username}')">
+                        View Info
+                    </button>
+                `;
+                
+                if (currentUserRole === 'dev' && !isCurrentUser) {
+                    if (user.role === 'user') {
+                        actions += `<button class="btn btn-secondary btn-small" onclick="toggleMod('${username}')">Make Mod</button>`;
+                    } else if (user.role === 'mod') {
+                        actions += `<button class="btn btn-secondary btn-small" onclick="toggleMod('${username}')">Remove Mod</button>`;
+                    }
+                }
+                
+                if (!isCurrentUser) {
+                    if (isBanned) {
+                        actions += `<button class="btn btn-secondary btn-small" onclick="unbanUser('${username}')">Unban</button>`;
+                    }
+                    if (isTextBanned) {
+                        actions += `<button class="btn btn-secondary btn-small" onclick="untextbanUser('${username}')">Untext Ban</button>`;
+                    }
+                    actions += `<button class="btn btn-danger btn-small" onclick="deleteUser('${username}')">Delete</button>`;
+                }
+                
+                userItem.innerHTML = `
+                    <div class="user-details">
+                        <div class="username">${username} ${roleTag} ${demoTag} ${statusTags}</div>
+                        <div class="user-email">${user.email}</div>
+                    </div>
+                    <div class="user-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        ${actions}
+                    </div>
+                `;
+                
+                userListElement.appendChild(userItem);
+            });
         }
 
         function populateUserInfo(username) {
@@ -1843,35 +2210,38 @@
             const banStatus = isUserBanned(username) ? `Yes (${getBanTimeRemaining(username)} remaining)` : 'No';
             const textBanStatus = isUserTextBanned(username) ? `Yes (${getTextBanTimeRemaining(username)} remaining)` : 'No';
             const demoStatus = isDemoAccount(username) ? 'Yes' : 'No';
+            const joinDate = new Date(user.joinDate || Date.now()).toLocaleDateString();
             
             userInfoDisplay.innerHTML = `
-                <div class="info-item">
-                    <span class="info-label">Username:</span>
-                    <span class="info-value">${username}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Email:</span>
-                    <span class="info-value">${user.email}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Password:</span>
-                    <span class="info-value">${user.password}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Role:</span>
-                    <span class="info-value">${user.role}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Demo Account:</span>
-                    <span class="info-value">${demoStatus}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Banned:</span>
-                    <span class="info-value">${banStatus}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Text Banned:</span>
-                    <span class="info-value">${textBanStatus}</span>
+                <div style="display: grid; gap: 15px;">
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Username:</span>
+                        <span>${username}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Email:</span>
+                        <span>${user.email}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Role:</span>
+                        <span style="text-transform: uppercase;">${user.role}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Join Date:</span>
+                        <span>${joinDate}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Demo Account:</span>
+                        <span>${demoStatus}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Banned:</span>
+                        <span>${banStatus}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px; background: var(--secondary-bg); border-radius: 8px;">
+                        <span style="font-weight: 600; color: var(--accent-color);">Text Banned:</span>
+                        <span>${textBanStatus}</span>
+                    </div>
                 </div>
             `;
         }
@@ -1887,7 +2257,8 @@
                 
                 if (user.role !== 'mod' && user.role !== 'dev') {
                     const userItem = document.createElement('div');
-                    userItem.className = 'ban-user-item';
+                    userItem.className = 'user-item';
+                    userItem.style.cursor = 'pointer';
                     userItem.onclick = () => selectUserToBan(username, userItem);
                     
                     const banStatus = isUserBanned(username) ? ' (Currently Banned)' : '';
@@ -1907,15 +2278,42 @@
         }
 
         function selectUserToBan(username, element) {
-            document.querySelectorAll('.ban-user-item').forEach(item => {
-                item.classList.remove('selected');
+            document.querySelectorAll('#banUserList .user-item').forEach(item => {
+                item.style.background = 'var(--secondary-bg)';
+                item.style.borderColor = 'var(--border-color)';
             });
             
-            element.classList.add('selected');
+            element.style.background = 'var(--glass-bg)';
+            element.style.borderColor = 'var(--accent-color)';
+            
             selectedUserToBan = username;
             document.getElementById('selectedUserToBan').textContent = username;
             document.getElementById('executeBanBtn').disabled = false;
             document.getElementById('executeBanBtn').textContent = selectedBanType === 'full' ? 'Ban User' : 'Text Ban User';
+        }
+
+        function selectBanType(type) {
+            selectedBanType = type;
+            
+            const fullBanBtn = document.getElementById('fullBanBtn');
+            const textBanBtn = document.getElementById('textBanBtn');
+            
+            if (type === 'full') {
+                fullBanBtn.style.background = 'linear-gradient(45deg, var(--accent-color), #00ccff)';
+                fullBanBtn.style.color = 'var(--primary-bg)';
+                textBanBtn.style.background = 'var(--glass-bg)';
+                textBanBtn.style.color = 'var(--text-primary)';
+            } else {
+                textBanBtn.style.background = 'linear-gradient(45deg, var(--accent-color), #00ccff)';
+                textBanBtn.style.color = 'var(--primary-bg)';
+                fullBanBtn.style.background = 'var(--glass-bg)';
+                fullBanBtn.style.color = 'var(--text-primary)';
+            }
+            
+            const executeBanBtn = document.getElementById('executeBanBtn');
+            if (selectedUserToBan) {
+                executeBanBtn.textContent = type === 'full' ? 'Ban User' : 'Text Ban User';
+            }
         }
 
         function executeBan() {
@@ -1937,12 +2335,12 @@
                 users[selectedUserToBan].textBanUntil = banUntil;
             }
             
-            saveUsers();
+            if (syncService) syncService.forceSync();
             
             const durationText = duration === 'permanent' ? 'permanently' : getDurationText(parseInt(duration));
             const banTypeText = selectedBanType === 'full' ? 'banned' : 'text banned';
-            alert(`User "${selectedUserToBan}" has been ${banTypeText} ${durationText}.`);
             
+            showNotification(`User "${selectedUserToBan}" has been ${banTypeText} ${durationText}.`, 'success');
             showDevTools();
         }
 
@@ -1954,83 +2352,14 @@
             return `for ${seconds} seconds`;
         }
 
-        function populateUserList() {
-            const userListElement = document.getElementById('userList');
-            if (!userListElement) return;
-            
-            userListElement.innerHTML = '';
-            
-            const currentUserRole = users[currentUser].role;
-            
-            Object.keys(users).forEach(username => {
-                const user = users[username];
-                const userItem = document.createElement('div');
-                userItem.className = 'user-item';
-                
-                const isCurrentUser = username === currentUser;
-                const isMod = user.role === 'mod';
-                const isDev = user.role === 'dev';
-                const isBanned = isUserBanned(username);
-                const isTextBanned = isUserTextBanned(username);
-                const isDemo = isDemoAccount(username);
-                
-                let roleTag = '';
-                if (isDev) roleTag = '<span class="dev-tag">DEV</span>';
-                else if (isMod) roleTag = '<span class="mod-tag">MOD</span>';
-                
-                let demoTag = '';
-                if (isDemo) demoTag = '<span class="demo-tag">DEMO</span>';
-                
-                let statusTags = '';
-                if (isBanned) statusTags += '<span class="banned-tag">BANNED</span>';
-                if (isTextBanned) statusTags += '<span class="textbanned-tag">TEXT BANNED</span>';
-                
-                let modToggleButton = '';
-                if (currentUserRole === 'dev' && !isCurrentUser && user.role === 'user') {
-                    modToggleButton = `<button class="mod-toggle-btn" onclick="toggleMod('${username}')">Add Mod</button>`;
-                } else if (currentUserRole === 'dev' && !isCurrentUser && user.role === 'mod') {
-                    modToggleButton = `<button class="mod-toggle-btn" onclick="toggleMod('${username}')">Remove Mod</button>`;
-                } else if (isCurrentUser) {
-                    modToggleButton = `<button class="mod-toggle-btn" disabled>Current User</button>`;
-                } else {
-                    modToggleButton = `<button class="mod-toggle-btn" disabled>No Permission</button>`;
-                }
-                
-                let banButtons = '';
-                if (isBanned) {
-                    banButtons += `<button class="unban-user-btn" ${isCurrentUser ? 'disabled' : ''} onclick="unbanUser('${username}')">Unban</button>`;
-                }
-                if (isTextBanned) {
-                    banButtons += `<button class="untextban-user-btn" ${isCurrentUser ? 'disabled' : ''} onclick="untextbanUser('${username}')">Untext Ban</button>`;
-                }
-                
-                userItem.innerHTML = `
-                    <div class="user-details">
-                        <div class="username">${username} ${roleTag} ${demoTag} ${statusTags}</div>
-                        <div class="user-email">${user.email}</div>
-                    </div>
-                    <div class="user-actions">
-                        <button class="view-info-btn" onclick="showUserInfo('${username}')">View Info</button>
-                        ${modToggleButton}
-                        ${banButtons}
-                        <button class="delete-user-btn" ${isCurrentUser ? 'disabled' : ''} onclick="deleteUser('${username}')">
-                            ${isCurrentUser ? 'Can\'t Delete' : 'Delete User'}
-                        </button>
-                    </div>
-                `;
-                
-                userListElement.appendChild(userItem);
-            });
-        }
-
         function toggleMod(username) {
             if (username === currentUser) {
-                alert('You cannot modify your own mod status!');
+                showNotification('You cannot modify your own role!', 'error');
                 return;
             }
             
             if (users[currentUser].role !== 'dev') {
-                alert('Only developers can modify mod status!');
+                showNotification('Only developers can modify mod status!', 'error');
                 return;
             }
             
@@ -2039,49 +2368,53 @@
             
             if (wasMod) {
                 user.role = 'user';
-                alert(`Removed mod privileges from "${username}".`);
+                showNotification(`Removed mod privileges from "${username}".`, 'success');
             } else {
                 user.role = 'mod';
-                alert(`Granted mod privileges to "${username}".`);
+                showNotification(`Granted mod privileges to "${username}".`, 'success');
             }
             
-            saveUsers();
+            if (syncService) syncService.forceSync();
             populateUserList();
         }
 
         function unbanUser(username) {
             users[username].banUntil = null;
-            saveUsers();
-            alert(`User "${username}" has been unbanned.`);
+            if (syncService) syncService.forceSync();
+            showNotification(`User "${username}" has been unbanned.`, 'success');
             populateUserList();
         }
 
         function untextbanUser(username) {
             users[username].textBanUntil = null;
-            saveUsers();
-            alert(`User "${username}" has been untext banned.`);
+            if (syncService) syncService.forceSync();
+            showNotification(`User "${username}" has been untext banned.`, 'success');
             populateUserList();
         }
 
         function deleteUser(username) {
             if (username === currentUser) {
-                alert('You cannot delete your own account!');
+                showNotification('You cannot delete your own account!', 'error');
                 return;
             }
             
-            if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
+            if (confirm(`Delete user "${username}"? This action cannot be undone.`)) {
                 delete users[username];
-                saveUsers();
+                if (syncService) syncService.forceSync();
                 populateUserList();
-                alert(`User "${username}" has been deleted.`);
+                showNotification(`User "${username}" has been deleted.`, 'success');
             }
         }
 
+        // ========================================
+        // MISC FUNCTIONS
+        // ========================================
+        
         function logout() {
             currentUser = null;
-            sessionStorage.removeItem('checkerboardMenuCurrentUser_' + sessionId);
             stopChatUpdates();
             showLogin();
+            showNotification('Logged out successfully.', 'success');
         }
 
         function openInventory() {
@@ -2089,36 +2422,30 @@
             window.open(`https://app.blobtown.com/inventory/?blobt=${userId}`, '_blank');
         }
 
-        function refreshClickSounds() {
-            setTimeout(() => {
-                addClickSoundToButtons();
-            }, 100);
-        }
-
-        // Initialize the app
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
         function initializeApp() {
             initializeUsers();
             initializeChatMessages();
+            initializeGallery();
             
-            // Initialize sync service
-            syncService = new SyncService();
+            syncService = new EnhancedSyncService();
             
-            // Check if user is already logged in
-            currentUser = sessionStorage.getItem('checkerboardMenuCurrentUser_' + sessionId);
-            if (currentUser && users[currentUser]) {
-                showMenu();
-            } else {
-                currentUser = null;
-                showLogin();
-            }
+            currentUser = null;
+            showLogin();
         }
 
-        // Event listeners and initialization
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
-            addClickSoundToButtons();
+            addSoundEffects();
             
-            // Allow sending messages with Enter key
+            // Chat input Enter key
             const chatInput = document.getElementById('chatInput');
             if (chatInput) {
                 chatInput.addEventListener('keypress', function(e) {
@@ -2128,7 +2455,7 @@
                 });
             }
 
-            // Login form handler
+            // Login form
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const username = document.getElementById('loginUsername').value.trim();
@@ -2136,22 +2463,20 @@
                 
                 if (users[username] && users[username].password === password) {
                     if (isUserBanned(username)) {
-                        playBuzzerSound();
                         const timeRemaining = getBanTimeRemaining(username);
-                        alert(`Your account is banned. Time remaining: ${timeRemaining}`);
+                        showNotification(`Account banned. Time remaining: ${timeRemaining}`, 'error');
                         return;
                     }
                     
                     currentUser = username;
-                    sessionStorage.setItem('checkerboardMenuCurrentUser_' + sessionId, currentUser);
                     showMenu();
+                    showNotification(`Welcome back, ${username}! 🎉`, 'success');
                 } else {
-                    playBuzzerSound();
-                    alert('Invalid username or password!');
+                    showNotification('Invalid username or password!', 'error');
                 }
             });
 
-            // Signup form handler
+            // Signup form
             document.getElementById('signupForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const username = document.getElementById('signupUsername').value.trim();
@@ -2160,12 +2485,12 @@
                 const confirmPassword = document.getElementById('confirmPassword').value;
 
                 if (password !== confirmPassword) {
-                    alert('Passwords do not match!');
+                    showNotification('Passwords do not match!', 'error');
                     return;
                 }
 
                 if (users[username]) {
-                    alert('Username already exists!');
+                    showNotification('Username already exists!', 'error');
                     return;
                 }
 
@@ -2174,26 +2499,34 @@
                     password: password,
                     role: 'user',
                     banUntil: null,
-                    textBanUntil: null
+                    textBanUntil: null,
+                    joinDate: Date.now()
                 };
 
-                saveUsers();
-                alert('Account created successfully! Please login.');
+                if (syncService) syncService.forceSync();
+                showNotification('Account created successfully! Please login.', 'success');
                 
                 document.getElementById('signupForm').reset();
                 showLogin();
             });
         });
 
-        // Update UI periodically to handle ban expiration
+        // Update UI periodically for ban expiration
         setInterval(() => {
             if (!document.getElementById('chatPage').classList.contains('hidden')) {
                 updateChatUI();
             }
             if (!document.getElementById('menuPage').classList.contains('hidden')) {
-                updateMenuTags();
+                updateUserTags();
             }
-        }, 5000);
+        }, 10000);
+
+        // Add some demo data after a delay
+        setTimeout(() => {
+            if (galleryImages.length === 0) {
+                // You could add some demo images here if needed
+            }
+        }, 2000);
     </script>
 </body>
 </html>
